@@ -1,0 +1,42 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Règles pour Tailwind CSS
+
+## Organisation des classes
+- Utiliser l'ordre des classes Tailwind recommandé
+- Grouper les classes par catégorie (layout, spacing, typography, etc.)
+- Utiliser les classes utilitaires de manière cohérente
+- Éviter les classes en ligne dans les templates
+
+## Composants
+- Créer des composants réutilisables avec des classes Tailwind
+- Utiliser @apply pour les styles réutilisables
+- Maintenir une hiérarchie visuelle cohérente
+- Utiliser les variantes de composants de manière systématique
+
+## Responsive Design
+- Utiliser les breakpoints de manière cohérente
+- Implémenter une approche mobile-first
+- Tester sur tous les breakpoints définis
+- Utiliser les classes responsive de manière optimale
+
+## Thème et Personnalisation
+- Respecter les variables de couleur définies
+- Utiliser les tokens de design system
+- Maintenir la cohérence des espacements
+- Personnaliser le fichier tailwind.config.js de manière organisée
+
+## Performance
+- Éviter les classes inutilisées
+- Utiliser PurgeCSS pour la production
+- Optimiser les classes répétitives
+- Maintenir un bundle CSS optimisé
+
+## Accessibilité
+- Utiliser les classes de focus appropriées
+- Maintenir un contraste suffisant
+- Respecter les tailles de texte standards
+- Implémenter des états visuels clairs 

@@ -1,0 +1,48 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Règles pour Laravel 12
+
+## Architecture
+- Utiliser une architecture en couches (Controllers, Services, Repositories)
+- Implémenter le pattern Repository pour l'accès aux données
+- Utiliser les DTOs pour le transfert de données entre les couches
+- Respecter le principe SOLID dans la conception des classes
+
+## Controllers
+- Garder les controllers fins et focalisés sur la logique de routage
+- Utiliser les Form Requests pour la validation
+- Implémenter les Resource Controllers quand c'est possible
+- Utiliser les API Resources pour la transformation des données
+
+## Models
+- Utiliser les traits pour la réutilisation de code
+- Implémenter les scopes pour les requêtes réutilisables
+- Définir les relations dans les modèles
+- Utiliser les casts pour la transformation des données
+
+## Services
+- Créer des services pour la logique métier complexe
+- Utiliser l'injection de dépendances
+- Implémenter les interfaces pour les services
+- Garder les services testables
+
+## Tests
+- Écrire des tests unitaires pour les services
+- Créer des tests d'intégration pour les controllers
+- Utiliser les factories pour les données de test
+- Maintenir une couverture de tests > 80%
+
+## Sécurité
+- Utiliser les middlewares d'authentification
+- Implémenter la validation CSRF
+- Sanitizer les entrées utilisateur
+- Utiliser les policies pour l'autorisation
+
+## Performance
+- Utiliser le cache quand c'est approprié
+- Optimiser les requêtes N+1
+- Implémenter la pagination
+- Utiliser les jobs pour les tâches longues 

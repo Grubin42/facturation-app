@@ -1,0 +1,48 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Règles pour Vue.js
+
+## Architecture des composants
+- Utiliser la Composition API avec `<script setup>`
+- Organiser les composants dans des dossiers par fonctionnalité
+- Maintenir une hiérarchie claire des composants
+- Utiliser les props pour la communication parent-enfant
+
+## État et Gestion des données
+- Utiliser Pinia pour la gestion d'état global
+- Implémenter des stores modulaires
+- Utiliser les computed properties pour les données dérivées
+- Éviter la mutation directe des props
+
+## Performance
+- Utiliser la lazy loading pour les routes
+- Implémenter le virtual scrolling pour les listes longues
+- Optimiser les re-rendus avec `v-show` vs `v-if`
+- Utiliser `v-memo` pour les composants statiques
+
+## TypeScript
+- Utiliser TypeScript pour tous les nouveaux composants
+- Définir des interfaces pour les props et les événements
+- Utiliser les types génériques pour les composants réutilisables
+- Maintenir une stricte vérification des types
+
+## Tests
+- Écrire des tests unitaires pour les composants
+- Tester les interactions utilisateur
+- Utiliser Vue Test Utils pour les tests d'intégration
+- Maintenir une couverture de tests > 80%
+
+## Accessibilité
+- Utiliser les attributs ARIA appropriés
+- Maintenir une navigation au clavier
+- Assurer un contraste suffisant
+- Implémenter des messages d'erreur clairs
+
+## Style et Maintenance
+- Suivre le style guide Vue.js
+- Documenter les composants complexes
+- Utiliser des noms de variables et méthodes explicites
+- Maintenir une structure de code cohérente 

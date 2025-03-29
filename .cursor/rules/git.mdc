@@ -1,0 +1,43 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Règles pour Git
+
+## Branches
+- Main: branche principale de production
+- Develop: branche de développement
+- Feature/*: nouvelles fonctionnalités
+- Bugfix/*: corrections de bugs
+- Hotfix/*: corrections urgentes en production
+
+## Commits
+- Utiliser des messages de commit descriptifs
+- Suivre le format: type(scope): description
+- Types: feat, fix, docs, style, refactor, test, chore
+- Limiter les commits à une seule fonctionnalité
+
+## Pull Requests
+- Créer des PRs de taille raisonnable
+- Inclure une description détaillée
+- Ajouter des captures d'écran si pertinent
+- Répondre aux commentaires de review
+
+## Code Review
+- Vérifier la qualité du code
+- S'assurer des tests
+- Valider la documentation
+- Confirmer la compatibilité
+
+## Workflow
+- Toujours pull avant de commencer
+- Rester à jour avec develop
+- Résoudre les conflits localement
+- Ne jamais forcer push sur main/develop
+
+## Sécurité
+- Ne pas commiter de secrets
+- Utiliser .env pour les variables sensibles
+- Vérifier les fichiers sensibles dans .gitignore
+- Ne pas exposer d'informations confidentielles 

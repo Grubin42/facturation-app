@@ -1,0 +1,29 @@
+---
+description: Règles pour l'utilisation de shadcn/ui dans le projet
+globs: ["resources/js/components/**/*.vue"]
+alwaysApply: true
+---
+
+# Règles pour l'utilisation de shadcn/ui
+
+## Composants UI
+- Toujours utiliser les composants shadcn/ui existants dans `resources/js/components/ui`
+- Ne pas créer de composants UI personnalisés sans avoir vérifié si un composant shadcn équivalent existe
+- Utiliser les variantes de composants définies dans leurs fichiers index.ts respectifs
+- Respecter la hiérarchie des composants shadcn (ex: Button dans un Dialog)
+
+## Styling
+- Utiliser les classes Tailwind fournies par shadcn
+- Respecter le système de thème (variables CSS) défini dans tailwind.config.js
+- Utiliser les utilitaires de style comme `cn()` pour la fusion des classes
+- Maintenir la cohérence visuelle en utilisant les tokens de couleur définis
+
+## Accessibilité
+- Respecter les attributs ARIA fournis par les composants shadcn
+- Maintenir le focus management natif des composants
+- Utiliser les composants interactifs (Dialog, Dropdown, etc.) avec leurs hooks associés
+
+## Performance
+- Importer uniquement les composants nécessaires
+- Utiliser la lazy loading pour les composants lourds
+- Maintenir les composants atomiques et réutilisables
