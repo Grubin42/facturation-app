@@ -48,20 +48,15 @@ Route::get('dashboard', function () {
         ->get();
 
     // Récupérer les factures en retard
-    $overdueInvoicesList = Invoice::where('user_id', $user->id)
+    $overdueInvoices = Invoice::where('user_id', $user->id)
+        ->where('status', 'overdue')
         ->with('client')
-        ->where(function($query) {
-            $query->where('status', 'overdue')
-                ->orWhere(function($q) {
-                    $q->whereIn('status', ['draft', 'sent'])
-                        ->where('due_date', '<', Carbon::today());
-                });
-        })
         ->orderBy('due_date', 'asc')
-        ->limit(5)
         ->get()
         ->map(function ($invoice) {
-            $invoice->days_overdue = Carbon::parse($invoice->due_date)->diffInDays(Carbon::today(), false);
+            // Calculer le nombre de jours de retard
+            $dueDate = Carbon::parse($invoice->due_date);
+            $invoice->days_overdue = $dueDate->diffInDays(Carbon::today());
             return $invoice;
         });
 
@@ -78,18 +73,18 @@ Route::get('dashboard', function () {
         ->toSql());
 
     // Pour déboguer - Vérifier les résultats
-    \Illuminate\Support\Facades\Log::info('Nombre de factures en retard récupérées: ' . $overdueInvoicesList->count());
-    \Illuminate\Support\Facades\Log::info('Contenu des factures en retard: ' . json_encode($overdueInvoicesList));
+    \Illuminate\Support\Facades\Log::info('Nombre de factures en retard récupérées: ' . $overdueInvoices->count());
+    \Illuminate\Support\Facades\Log::info('Contenu des factures en retard: ' . json_encode($overdueInvoices));
 
     return Inertia::render('Dashboard', [
         'stats' => [
             'total_invoices' => $totalInvoices,
             'paid_invoices' => $paidInvoices,
-            'overdue_invoices' => $overdueInvoices,
+            'overdue_invoices' => $overdueInvoices->count(),
             'total_revenue' => $totalRevenue,
         ],
         'recentInvoices' => $recentInvoices,
-        'overdueInvoices' => $overdueInvoicesList,
+        'overdueInvoices' => $overdueInvoices,
         'currency' => $currency,
     ]);
 })->middleware(['auth', 'verified', EnsureUserIsActive::class])->name('dashboard');

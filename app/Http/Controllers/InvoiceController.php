@@ -355,8 +355,34 @@ class InvoiceController extends Controller
             ]
         );
 
-        // On pourrait utiliser une bibliothèque comme Dompdf ici
-        // Pour l'instant, nous allons juste renvoyer la vue pour afficher la facture
+        // Si la requête contient le paramètre download=true
+        if (request()->has('download')) {
+            // Utiliser DomPDF pour générer le PDF
+            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.invoice', [
+                'invoice' => $invoice,
+                'settings' => $settings
+            ]);
+
+            // Options pour améliorer la qualité du PDF
+            $pdf->setPaper('a4', 'portrait');
+            $pdf->setOption('dpi', 150);
+            $pdf->setOption('isHtml5ParserEnabled', true);
+            $pdf->setOption('isRemoteEnabled', true);
+            $pdf->setOption('defaultFont', 'Arial');
+            $pdf->setOption('enable_css_float', true);
+            $pdf->setOption('enable_html5_parser', true);
+            $pdf->setOption('enable_remote', true);
+            $pdf->setOption('font_height_ratio', 1.0);
+            $pdf->setOption('margin_bottom', 30);
+            $pdf->setOption('margin_top', 15);
+            $pdf->setOption('margin_left', 15);
+            $pdf->setOption('margin_right', 15);
+
+            // Télécharger le PDF
+            return $pdf->download('facture-' . $invoice->invoice_number . '.pdf');
+        }
+
+        // Sinon, afficher la vue d'aperçu
         return Inertia::render('Invoices/Pdf', [
             'invoice' => $invoice,
             'settings' => $settings
