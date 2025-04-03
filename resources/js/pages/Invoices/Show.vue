@@ -12,9 +12,9 @@
             Modifier
           </Link>
           <span class="text-gray-300">|</span>
-          <a href="#" @click.prevent="downloadPdf" class="text-gray-600 hover:text-gray-900">
+          <Link :href="route('invoices.pdf', invoice.id)" class="text-gray-600 hover:text-gray-900" target="_blank">
             PDF
-          </a>
+          </Link>
         </div>
       </div>
 
@@ -206,6 +206,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/AppLayout.vue';
+import { Pencil, FileText, Trash2 } from 'lucide-vue-next';
 
 const props = defineProps({
   invoice: Object,
@@ -301,8 +302,8 @@ const sendInvoice = () => {
 
 // Ajouter la fonction pour télécharger le PDF
 const downloadPdf = () => {
-  // URL de l'API pour ouvrir la prévisualisation PDF
-  const pdfUrl = route('invoices.pdf', props.invoice.id);
+  // URL de l'API pour télécharger le PDF
+  const pdfUrl = route('invoices.pdf', props.invoice.id) + '?download=true';
 
   // Ouvrir le PDF dans un nouvel onglet
   window.open(pdfUrl, '_blank');

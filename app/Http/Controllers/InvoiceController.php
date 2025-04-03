@@ -371,12 +371,6 @@ class InvoiceController extends Controller
             $pdf->setOption('defaultFont', 'Arial');
             $pdf->setOption('enable_css_float', true);
             $pdf->setOption('enable_html5_parser', true);
-            $pdf->setOption('enable_remote', true);
-            $pdf->setOption('font_height_ratio', 1.0);
-            $pdf->setOption('margin_bottom', 30);
-            $pdf->setOption('margin_top', 15);
-            $pdf->setOption('margin_left', 15);
-            $pdf->setOption('margin_right', 15);
 
             // Télécharger le PDF
             return $pdf->download('facture-' . $invoice->invoice_number . '.pdf');

@@ -9,6 +9,12 @@
             margin: 15mm 15mm 30mm 15mm;
             size: A4;
         }
+        @page {
+            @top-right {
+                content: "FACTURE {{ $invoice->invoice_number }}";
+                font-size: 10pt;
+            }
+        }
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -47,7 +53,7 @@
 
         .logo {
             max-width: 150px;
-            max-height: 100px;
+            max-height: 150px;
             margin-bottom: 5px;
         }
 

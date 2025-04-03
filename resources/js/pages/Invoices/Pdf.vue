@@ -3,14 +3,22 @@
 
     <!-- En-tête -->
     <div class="flex justify-between items-start mb-10 px-8 header-section">
-      <div class="flex flex-col items-start">
-        <div v-if="settings.logo_path" class="mb-2 max-w-[150px] max-h-[100px] flex justify-center">
+      <div>
+        <h1 class="text-3xl font-bold mb-1">FACTURE</h1>
+        <p class="text-lg font-semibold">{{ invoice.invoice_number }}</p>
+      </div>
+      <div class="text-right flex flex-col items-end">
+        <div v-if="settings.logo_path" class="mb-2 max-w-[120px] max-h-[80px] flex justify-center">
           <img :src="logoUrl" alt="Logo de l'entreprise" class="object-contain" />
         </div>
         <h2 class="text-lg font-bold mt-1">{{ settings.company_name }}</h2>
       </div>
-      <div class="text-right client-info" style="line-height: 1;">
-        <h3 class="text-lg font-semibold mb-1">{{ invoice.invoice_number }}</h3>
+    </div>
+
+    <!-- Informations de facturation -->
+    <div class="flex justify-between mb-10 px-8 client-info-section">
+      <div class="w-1/2 client-info" style="line-height: 1;">
+        <h3 class="text-lg font-semibold mb-1">Facturé à:</h3>
         <div style="line-height: 1;">
           <p class="font-semibold mb-0" style="margin: 0; padding: 1px 0;">{{ invoice.client.name }}</p>
           <p class="mb-0" style="margin: 0; padding: 1px 0;">{{ invoice.client.address }}</p>
@@ -20,17 +28,8 @@
           <p class="mb-0" style="margin: 0; padding: 1px 0;">Email: {{ invoice.client.email }}</p>
         </div>
       </div>
-    </div>
-
-    <!-- Titre de la facture -->
-    <div class="px-8 mb-5">
-      <h1 class="text-3xl font-bold mb-1">FACTURE {{ invoice.invoice_number }}</h1>
-    </div>
-
-    <!-- Informations de facturation -->
-    <div class="px-8 mb-5">
-      <div class="flex justify-start">
-        <div class="mr-10">
+      <div class="w-1/2 text-right">
+        <div style="margin-bottom: 5px;">
           <span style="font-weight: bold;">Date de facture:</span>
           {{ formatDate(invoice.invoice_date) }}
         </div>
