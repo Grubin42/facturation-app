@@ -11,6 +11,7 @@ const props = defineProps({
     stats: Object,
     recentInvoices: Array,
     overdueInvoices: Array,
+    currency: String,
 });
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -26,7 +27,7 @@ const overdueInvoices = computed(() => props.stats?.overdue_invoices || 0);
 const totalRevenue = computed(() => props.stats?.total_revenue || 0);
 
 const formatAmount = (amount) => {
-    return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(amount);
+    return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: props.currency || 'EUR' }).format(amount);
 };
 
 const formatDate = (dateString) => {

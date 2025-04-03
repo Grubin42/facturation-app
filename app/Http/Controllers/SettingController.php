@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class SettingController extends Controller
@@ -28,6 +29,11 @@ class SettingController extends Controller
             ]
         );
 
+        // Ajouter l'URL du logo s'il existe
+        if ($settings->logo_path) {
+            $settings->logo_url = Storage::url($settings->logo_path);
+        }
+
         return Inertia::render('settings/Edit', [
             'settings' => $settings
         ]);
@@ -38,7 +44,7 @@ class SettingController extends Controller
      */
     public function update(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'company_name' => 'required|string|max:255',
             'company_address' => 'nullable|string|max:255',
             'company_city' => 'nullable|string|max:255',
@@ -49,6 +55,7 @@ class SettingController extends Controller
             'company_website' => 'nullable|url|max:255',
             'company_siret' => 'nullable|string|max:30',
             'company_vat' => 'nullable|string|max:30',
+            'company_iban' => 'nullable|string|max:50',
             'invoice_prefix' => 'required|string|max:10',
             'invoice_next_number' => 'required|integer|min:1',
             'quote_prefix' => 'required|string|max:10',
@@ -58,12 +65,37 @@ class SettingController extends Controller
             'currency' => 'required|string|size:3',
             'invoice_footer' => 'nullable|string',
             'quote_footer' => 'nullable|string',
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        $settings = Setting::updateOrCreate(
-            ['user_id' => Auth::id()],
-            $request->all()
-        );
+        // Récupérer les paramètres existants
+        $settings = Setting::where('user_id', Auth::id())->first();
+
+        if (!$settings) {
+            $settings = new Setting();
+            $settings->user_id = Auth::id();
+        }
+
+        // Gérer l'upload du logo
+        if ($request->hasFile('logo')) {
+            // Supprimer l'ancien logo s'il existe
+            if ($settings->logo_path) {
+                Storage::delete($settings->logo_path);
+            }
+
+            // Stocker le nouveau logo
+            $path = $request->file('logo')->store('logos', 'public');
+            $settings->logo_path = $path;
+        }
+
+        // Mettre à jour les autres champs
+        foreach ($validated as $key => $value) {
+            if ($key !== 'logo') {
+                $settings->{$key} = $value;
+            }
+        }
+
+        $settings->save();
 
         return redirect()->route('settings.edit')
             ->with('success', 'Paramètres mis à jour avec succès.');

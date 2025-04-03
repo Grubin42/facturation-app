@@ -208,7 +208,8 @@ import { Label } from '@/components/ui/label';
 import AppLayout from '@/Layouts/AppLayout.vue';
 
 const props = defineProps({
-  invoice: Object
+  invoice: Object,
+  currency: String
 });
 
 const breadcrumbs = [
@@ -235,7 +236,7 @@ const formatDate = (dateString) => {
 
 const formatAmount = (amount) => {
   if (amount === undefined || amount === null) return '-';
-  return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(amount);
+  return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: props.currency }).format(amount);
 };
 
 const getStatusLabel = (status) => {

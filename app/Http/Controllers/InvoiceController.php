@@ -27,32 +27,38 @@ class InvoiceController extends Controller
             ->where('due_date', '<', Carbon::today())
             ->update(['status' => 'overdue']);
 
-        $query = Invoice::with('client')
-            ->where('user_id', Auth::id())
-            ->orderBy('created_at', 'desc');
+        $userInvoices = Invoice::where('user_id', Auth::id())
+            ->with('client');
 
         // Filtres
         if ($request->filled('client_id')) {
-            $query->where('client_id', $request->client_id);
+            $userInvoices->where('client_id', $request->client_id);
         }
 
         if ($request->filled('status')) {
-            $query->where('status', $request->status);
+            $userInvoices->where('status', $request->status);
         }
 
-        if ($request->filled('start_date') && $request->filled('end_date')) {
-            $query->whereBetween('invoice_date', [
-                Carbon::parse($request->start_date)->startOfDay(),
-                Carbon::parse($request->end_date)->endOfDay()
-            ]);
+        if ($request->filled('start_date')) {
+            $userInvoices->where('invoice_date', '>=', $request->start_date);
         }
 
-        $invoices = $query->get();
+        if ($request->filled('end_date')) {
+            $userInvoices->where('invoice_date', '<=', $request->end_date);
+        }
 
-        $clients = Client::where('user_id', Auth::id())->orderBy('name')->get();
+        $userInvoices = $userInvoices->orderBy('invoice_date', 'desc')->get();
+
+        $clients = Client::where('user_id', Auth::id())
+            ->orderBy('name')
+            ->get();
+
+        // Récupérer les paramètres de l'utilisateur pour la devise
+        $settings = Setting::where('user_id', Auth::id())->first();
+        $currency = $settings ? $settings->currency : 'EUR';
 
         return Inertia::render('Invoices/Index', [
-            'invoices' => $invoices,
+            'invoices' => $userInvoices,
             'clients' => $clients,
             'filters' => $request->only(['client_id', 'status', 'start_date', 'end_date']),
             'statuses' => [
@@ -61,7 +67,8 @@ class InvoiceController extends Controller
                 'paid' => 'Payée',
                 'overdue' => 'En retard',
                 'cancelled' => 'Annulée'
-            ]
+            ],
+            'currency' => $currency
         ]);
     }
 
@@ -89,7 +96,8 @@ class InvoiceController extends Controller
                 'invoice_prefix' => 'INV',
                 'invoice_next_number' => 1,
                 'default_tax_rate' => 20,
-                'payment_terms' => 30
+                'payment_terms' => 30,
+                'currency' => 'EUR'
             ]
         );
 
@@ -103,7 +111,8 @@ class InvoiceController extends Controller
             'invoiceNumber' => $invoiceNumber,
             'defaultTaxRate' => $settings->default_tax_rate,
             'today' => $today,
-            'dueDate' => $dueDate
+            'dueDate' => $dueDate,
+            'currency' => $settings->currency
         ]);
     }
 
@@ -185,8 +194,13 @@ class InvoiceController extends Controller
 
         $invoice->load(['client', 'items']);
 
+        // Récupérer les paramètres de l'utilisateur pour la devise
+        $settings = Setting::where('user_id', Auth::id())->first();
+        $currency = $settings ? $settings->currency : 'EUR';
+
         return Inertia::render('Invoices/Show', [
-            'invoice' => $invoice
+            'invoice' => $invoice,
+            'currency' => $currency
         ]);
     }
 
@@ -203,9 +217,14 @@ class InvoiceController extends Controller
             ->orderBy('name')
             ->get();
 
+        // Récupérer les paramètres de l'utilisateur pour la devise
+        $settings = Setting::where('user_id', Auth::id())->first();
+        $currency = $settings ? $settings->currency : 'EUR';
+
         return Inertia::render('Invoices/Edit', [
             'invoice' => $invoice,
-            'clients' => $clients
+            'clients' => $clients,
+            'currency' => $currency
         ]);
     }
 

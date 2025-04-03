@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Client;
+use App\Models\Setting;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -67,8 +68,12 @@ class ClientController extends Controller
 
         $client->load(['invoices', 'quotes']);
 
+        $settings = Setting::where('user_id', Auth::id())->first();
+        $currency = $settings ? $settings->currency : 'EUR';
+
         return Inertia::render('Clients/Show', [
-            'client' => $client
+            'client' => $client,
+            'currency' => $currency
         ]);
     }
 

@@ -24,5 +24,5 @@ Route::middleware('auth')->group(function () {
 // Routes pour les paramètres (protégées par authentification)
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/settings/company', [SettingController::class, 'edit'])->name('settings.edit');
-    Route::patch('/settings/company', [SettingController::class, 'update'])->name('settings.update');
+    Route::match(['patch', 'post'], '/settings/company', [SettingController::class, 'update'])->name('settings.update');
 });

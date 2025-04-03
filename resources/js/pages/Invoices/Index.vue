@@ -193,7 +193,8 @@ const props = defineProps({
   invoices: Array,
   clients: Array,
   filters: Object,
-  statuses: Object
+  statuses: Object,
+  currency: String
 });
 
 const breadcrumbs = [
@@ -257,7 +258,7 @@ const formatDate = (dateString) => {
 
 const formatAmount = (amount) => {
   if (amount === undefined || amount === null) return '-';
-  return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(amount);
+  return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: props.currency }).format(amount);
 };
 
 const getStatusClass = (status) => {

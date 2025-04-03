@@ -37,6 +37,9 @@ Route::get('dashboard', function () {
         ->count();
     $totalRevenue = Invoice::where('user_id', $user->id)->where('status', 'paid')->sum('total');
 
+    // Récupérer la devise de l'utilisateur
+    $currency = \App\Models\Setting::where('user_id', $user->id)->value('currency') ?? 'EUR';
+
     // Récupérer les factures récentes
     $recentInvoices = Invoice::where('user_id', $user->id)
         ->with('client')
@@ -87,6 +90,7 @@ Route::get('dashboard', function () {
         ],
         'recentInvoices' => $recentInvoices,
         'overdueInvoices' => $overdueInvoicesList,
+        'currency' => $currency,
     ]);
 })->middleware(['auth', 'verified', EnsureUserIsActive::class])->name('dashboard');
 

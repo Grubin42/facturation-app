@@ -27,6 +27,7 @@ class Setting extends Model
         'company_website',
         'company_siret',
         'company_vat',
+        'company_iban',
         'invoice_prefix',
         'invoice_next_number',
         'quote_prefix',

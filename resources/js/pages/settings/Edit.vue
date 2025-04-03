@@ -9,10 +9,59 @@
         {{ $page.props.flash.success }}
       </div>
 
-      <form @submit.prevent="submit">
+      <form @submit.prevent="submit" enctype="multipart/form-data">
         <!-- Informations de l'entreprise -->
         <div class="bg-white rounded-lg shadow-md p-6 mb-6">
           <h2 class="text-lg font-semibold mb-4">Informations de l'entreprise</h2>
+
+          <!-- Logo de l'entreprise -->
+          <div class="mb-6">
+            <Label for="logo">Logo de l'entreprise</Label>
+            <div class="flex items-start space-x-4 mt-1">
+              <div v-if="logoPreview || settings.logo_url" class="w-40 h-40 relative flex-shrink-0">
+                <img
+                  :src="logoPreview || settings.logo_url"
+                  alt="Logo de l'entreprise"
+                  class="object-contain w-full h-full border rounded-md p-2"
+                />
+                <button
+                  @click.prevent="removeLogo"
+                  type="button"
+                  class="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 shadow-md hover:bg-red-600"
+                  aria-label="Supprimer le logo"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                  </svg>
+                </button>
+              </div>
+              <div class="flex-grow">
+                <div class="flex items-center justify-center w-full">
+                  <label for="logo" class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                    <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                      <svg class="w-8 h-8 mb-3 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
+                      </svg>
+                      <p class="mb-1 text-sm text-gray-500">Cliquez ou glissez-déposez</p>
+                      <p class="text-xs text-gray-500">PNG, JPG, GIF (Max. 2Mo)</p>
+                    </div>
+                    <input
+                      id="logo"
+                      type="file"
+                      ref="logoInput"
+                      @change="handleLogoUpload"
+                      accept="image/*"
+                      class="hidden"
+                    />
+                  </label>
+                </div>
+                <div v-if="form.errors.logo" class="text-red-500 text-sm mt-1">
+                  {{ form.errors.logo }}
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <Label for="company_name">Nom de l'entreprise</Label>
@@ -54,6 +103,21 @@
               />
               <div v-if="form.errors.company_vat" class="text-red-500 text-sm mt-1">
                 {{ form.errors.company_vat }}
+              </div>
+            </div>
+
+            <div>
+              <Label for="company_iban">IBAN</Label>
+              <Input
+                id="company_iban"
+                v-model="form.company_iban"
+                type="text"
+                class="w-full mt-1"
+                placeholder="CH00 0000 0000 0000 0000 0"
+                :class="{ 'border-red-500': form.errors.company_iban }"
+              />
+              <div v-if="form.errors.company_iban" class="text-red-500 text-sm mt-1">
+                {{ form.errors.company_iban }}
               </div>
             </div>
 
@@ -331,7 +395,8 @@ import { Link, router, useForm } from '@inertiajs/vue3';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import AppLayout from '@/Layouts/AppLayout.vue';
+import AppLayout from '@/layouts/AppLayout.vue';
+import { ref } from 'vue';
 
 const props = defineProps({
   settings: Object
@@ -341,6 +406,9 @@ const breadcrumbs = [
   { title: 'Dashboard', href: route('dashboard') },
   { title: 'Paramètres', href: route('settings.edit'), current: true }
 ];
+
+const logoInput = ref(null);
+const logoPreview = ref(null);
 
 const form = useForm({
   company_name: props.settings.company_name || '',
@@ -353,6 +421,7 @@ const form = useForm({
   company_website: props.settings.company_website || '',
   company_siret: props.settings.company_siret || '',
   company_vat: props.settings.company_vat || '',
+  company_iban: props.settings.company_iban || '',
   invoice_prefix: props.settings.invoice_prefix || 'INV',
   invoice_next_number: props.settings.invoice_next_number || 1,
   quote_prefix: props.settings.quote_prefix || 'QUO',
@@ -362,9 +431,33 @@ const form = useForm({
   currency: props.settings.currency || 'EUR',
   invoice_footer: props.settings.invoice_footer || '',
   quote_footer: props.settings.quote_footer || '',
+  logo: null,
 });
 
+const handleLogoUpload = (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    form.logo = file;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      logoPreview.value = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+};
+
+const removeLogo = () => {
+  form.logo = null;
+  logoPreview.value = null;
+  if (logoInput.value) {
+    logoInput.value.value = '';
+  }
+};
+
 const submit = () => {
-  form.patch(route('settings.update'));
+  form.post(route('settings.update'), {
+    forceFormData: true,
+    preserveScroll: true,
+  });
 };
 </script>

@@ -277,7 +277,8 @@ const props = defineProps({
   invoiceNumber: String,
   defaultTaxRate: Number,
   today: String,
-  dueDate: String
+  dueDate: String,
+  currency: String
 });
 
 const breadcrumbs = [
@@ -346,7 +347,7 @@ function calculateTotals() {
 
 const formatAmount = (amount) => {
   if (amount === undefined || amount === null) return '-';
-  return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(amount);
+  return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: props.currency }).format(amount);
 };
 
 const cancel = () => {

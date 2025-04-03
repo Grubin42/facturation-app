@@ -277,7 +277,8 @@ import AppLayout from '@/Layouts/AppLayout.vue';
 
 const props = defineProps({
   invoice: Object,
-  clients: Array
+  clients: Array,
+  currency: String
 });
 
 const breadcrumbs = [
@@ -361,7 +362,7 @@ function calculateTotals() {
 
 const formatAmount = (amount) => {
   if (amount === undefined || amount === null) return '-';
-  return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(amount);
+  return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: props.currency }).format(amount);
 };
 
 const cancel = () => {
