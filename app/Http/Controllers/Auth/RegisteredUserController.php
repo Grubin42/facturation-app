@@ -40,12 +40,12 @@ class RegisteredUserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'is_active' => false,
         ]);
 
         event(new Registered($user));
 
-        Auth::login($user);
-
-        return to_route('dashboard');
+        return redirect()->route('login')
+            ->with('status', 'Votre compte a été créé avec succès mais doit être activé par un administrateur. Vous recevrez une notification lorsque cela sera fait.');
     }
 }

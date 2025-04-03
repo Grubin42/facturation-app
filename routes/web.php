@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\InvoiceController;
+use App\Http\Middleware\EnsureUserIsActive;
+use App\Http\Middleware\AdminMiddleware;
 use App\Models\Invoice;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -86,10 +88,10 @@ Route::get('dashboard', function () {
         'recentInvoices' => $recentInvoices,
         'overdueInvoices' => $overdueInvoicesList,
     ]);
-})->middleware(['auth', 'verified'])->name('dashboard');
+})->middleware(['auth', 'verified', EnsureUserIsActive::class])->name('dashboard');
 
-// Routes protégées par l'authentification
-Route::middleware(['auth', 'verified'])->group(function () {
+// Routes protégées par l'authentification et vérification de l'activation
+Route::middleware(['auth', 'verified', EnsureUserIsActive::class])->group(function () {
     // Gestion des clients
     Route::resource('clients', ClientController::class);
 
@@ -98,6 +100,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('invoices/{invoice}/mark-as-paid', [InvoiceController::class, 'markAsPaid'])->name('invoices.mark-as-paid');
     Route::post('invoices/{invoice}/mark-as-cancelled', [InvoiceController::class, 'markAsCancelled'])->name('invoices.mark-as-cancelled');
     Route::get('invoices/{invoice}/pdf', [InvoiceController::class, 'generatePdf'])->name('invoices.pdf');
+});
+
+// Routes d'administration
+Route::prefix('admin')->name('admin.')->middleware(['auth', EnsureUserIsActive::class, AdminMiddleware::class])->group(function () {
+    Route::get('/', [\App\Http\Controllers\Admin\AdminController::class, 'dashboard'])->name('dashboard');
+    Route::get('/users', [\App\Http\Controllers\Admin\AdminController::class, 'users'])->name('users');
+    Route::patch('/users/{user}/toggle-status', [\App\Http\Controllers\Admin\AdminController::class, 'toggleUserStatus'])->name('users.toggle-status');
+    Route::patch('/users/{user}/change-role', [\App\Http\Controllers\Admin\AdminController::class, 'changeUserRole'])->name('users.change-role');
 });
 
 require __DIR__.'/settings.php';

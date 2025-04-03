@@ -23,6 +23,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
+        'is_active',
     ];
 
     /**
@@ -46,6 +48,22 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * Vérifier si l'utilisateur est un administrateur.
+     */
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    /**
+     * Vérifier si l'utilisateur est actif.
+     */
+    public function isActive(): bool
+    {
+        return $this->is_active;
     }
 
     /**

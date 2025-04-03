@@ -4,9 +4,14 @@ import NavMain from '@/components/NavMain.vue';
 import NavUser from '@/components/NavUser.vue';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
-import { Link } from '@inertiajs/vue3';
-import { BookOpen, Folder, LayoutGrid, Users, FileText, Settings } from 'lucide-vue-next';
+import { Link, usePage } from '@inertiajs/vue3';
+import { BookOpen, Folder, LayoutGrid, Users, FileText, Settings, ShieldCheck } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
+import { computed } from 'vue';
+
+const page = usePage();
+const user = computed(() => page.props.auth?.user);
+const isAdmin = computed(() => user.value?.role === 'admin');
 
 const mainNavItems: NavItem[] = [
     {
@@ -30,6 +35,15 @@ const mainNavItems: NavItem[] = [
         icon: Settings,
     },
 ];
+
+// Ajout du lien Admin si l'utilisateur est un administrateur
+if (isAdmin.value) {
+    mainNavItems.push({
+        title: 'Administration',
+        href: '/admin',
+        icon: ShieldCheck,
+    });
+}
 
 const footerNavItems: NavItem[] = [
     {
