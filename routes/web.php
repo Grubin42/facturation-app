@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\QuoteController;
 use App\Http\Middleware\EnsureUserIsActive;
 use App\Http\Middleware\AdminMiddleware;
 use App\Models\Invoice;
@@ -99,6 +100,13 @@ Route::middleware(['auth', 'verified', EnsureUserIsActive::class])->group(functi
     Route::post('invoices/{invoice}/mark-as-paid', [InvoiceController::class, 'markAsPaid'])->name('invoices.mark-as-paid');
     Route::post('invoices/{invoice}/mark-as-cancelled', [InvoiceController::class, 'markAsCancelled'])->name('invoices.mark-as-cancelled');
     Route::get('invoices/{invoice}/pdf', [InvoiceController::class, 'generatePdf'])->name('invoices.pdf');
+
+    // Gestion des devis
+    Route::resource('quotes', QuoteController::class);
+    Route::post('quotes/{quote}/accept', [QuoteController::class, 'markAsAccepted'])->name('quotes.accept');
+    Route::post('quotes/{quote}/reject', [QuoteController::class, 'markAsRejected'])->name('quotes.reject');
+    Route::post('quotes/{quote}/convert', [QuoteController::class, 'convertToInvoice'])->name('quotes.convert');
+    Route::get('quotes/{quote}/pdf', [QuoteController::class, 'generatePdf'])->name('quotes.pdf');
 });
 
 // Routes d'administration

@@ -2,12 +2,10 @@
   <AppLayout :breadcrumbs="breadcrumbs">
     <div class="container mx-auto py-6">
       <div class="flex justify-between items-center mb-6">
-        <h1 class="text-2xl font-bold">Modifier la facture {{ invoice.invoice_number }}</h1>
-        <div class="flex space-x-2">
-          <Link :href="route('invoices.show', invoice.id)" class="text-gray-600 hover:text-gray-900">
-            Annuler
-          </Link>
-        </div>
+        <h1 class="text-2xl font-bold">Modifier le devis {{ quote.quote_number }}</h1>
+        <Link :href="route('quotes.show', quote.id)" class="text-gray-600 hover:text-gray-900">
+          Retour au devis
+        </Link>
       </div>
 
       <form @submit.prevent="submit">
@@ -33,19 +31,19 @@
               </div>
             </div>
 
-            <!-- Numéro de facture -->
+            <!-- Numéro de devis -->
             <div>
-              <Label for="invoice_number">Numéro de facture</Label>
+              <Label for="quote_number">Numéro de devis</Label>
               <Input
-                id="invoice_number"
-                v-model="form.invoice_number"
+                id="quote_number"
+                v-model="form.quote_number"
                 type="text"
                 class="w-full mt-1"
-                :class="{ 'border-red-500': form.errors.invoice_number }"
+                :class="{ 'border-red-500': form.errors.quote_number }"
                 required
               />
-              <div v-if="form.errors.invoice_number" class="text-red-500 text-sm mt-1">
-                {{ form.errors.invoice_number }}
+              <div v-if="form.errors.quote_number" class="text-red-500 text-sm mt-1">
+                {{ form.errors.quote_number }}
               </div>
             </div>
 
@@ -60,69 +58,55 @@
                 required
               >
                 <option value="draft">Brouillon</option>
-                <option value="sent">Envoyée</option>
-                <option value="paid">Payée</option>
-                <option value="overdue">En retard</option>
-                <option value="cancelled">Annulée</option>
+                <option value="sent">Envoyé</option>
+                <option value="accepted">Accepté</option>
+                <option value="rejected">Refusé</option>
+                <option value="expired">Expiré</option>
+                <option v-if="quote.status === 'converted'" value="converted">Converti</option>
               </select>
               <div v-if="form.errors.status" class="text-red-500 text-sm mt-1">
                 {{ form.errors.status }}
               </div>
             </div>
 
-            <!-- Date de facture -->
+            <!-- Date de devis -->
             <div>
-              <Label for="invoice_date">Date de facture</Label>
+              <Label for="quote_date">Date de devis</Label>
               <Input
-                id="invoice_date"
-                v-model="form.invoice_date"
+                id="quote_date"
+                v-model="form.quote_date"
                 type="date"
                 class="w-full mt-1"
-                :class="{ 'border-red-500': form.errors.invoice_date }"
+                :class="{ 'border-red-500': form.errors.quote_date }"
                 required
               />
-              <div v-if="form.errors.invoice_date" class="text-red-500 text-sm mt-1">
-                {{ form.errors.invoice_date }}
+              <div v-if="form.errors.quote_date" class="text-red-500 text-sm mt-1">
+                {{ form.errors.quote_date }}
               </div>
             </div>
 
-            <!-- Date d'échéance -->
+            <!-- Date d'expiration -->
             <div>
-              <Label for="due_date">Date d'échéance</Label>
+              <Label for="expiry_date">Date d'expiration</Label>
               <Input
-                id="due_date"
-                v-model="form.due_date"
+                id="expiry_date"
+                v-model="form.expiry_date"
                 type="date"
                 class="w-full mt-1"
-                :class="{ 'border-red-500': form.errors.due_date }"
+                :class="{ 'border-red-500': form.errors.expiry_date }"
                 required
               />
-              <div v-if="form.errors.due_date" class="text-red-500 text-sm mt-1">
-                {{ form.errors.due_date }}
-              </div>
-            </div>
-
-            <!-- Méthode de paiement (visible uniquement si statut = payé) -->
-            <div v-if="form.status === 'paid'">
-              <Label for="payment_method">Méthode de paiement</Label>
-              <Input
-                id="payment_method"
-                v-model="form.payment_method"
-                type="text"
-                class="w-full mt-1"
-                :class="{ 'border-red-500': form.errors.payment_method }"
-              />
-              <div v-if="form.errors.payment_method" class="text-red-500 text-sm mt-1">
-                {{ form.errors.payment_method }}
+              <div v-if="form.errors.expiry_date" class="text-red-500 text-sm mt-1">
+                {{ form.errors.expiry_date }}
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Lignes de facture -->
+        <!-- Lignes de devis -->
         <div class="bg-white rounded-lg shadow-md p-6 mb-6">
           <div class="flex justify-between items-center mb-4">
-            <h2 class="text-lg font-semibold">Lignes de facture</h2>
+            <h2 class="text-lg font-semibold">Lignes de devis</h2>
             <Button type="button" variant="outline" @click="addItem">Ajouter une ligne</Button>
           </div>
 
@@ -145,7 +129,7 @@
               <tbody>
                 <tr v-if="form.items.length === 0">
                   <td colspan="6" class="px-4 py-8 text-center text-gray-500">
-                    Aucune ligne de facture. Cliquez sur "Ajouter une ligne" pour commencer.
+                    Aucune ligne de devis. Cliquez sur "Ajouter une ligne" pour commencer.
                   </td>
                 </tr>
                 <tr v-for="(item, index) in form.items" :key="index" class="border-b">
@@ -257,7 +241,7 @@
           </Button>
           <Button
             type="submit"
-            :disabled="form.processing"
+            :disabled="form.processing || quote.status === 'converted'"
           >
             Enregistrer
           </Button>
@@ -268,108 +252,106 @@
 </template>
 
 <script setup>
-import { Link, router, useForm } from '@inertiajs/vue3';
-import { onMounted } from 'vue';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Link, useForm } from '@inertiajs/vue3';
+import { ref, onMounted, computed } from 'vue';
 import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
 
 const props = defineProps({
-  invoice: Object,
+  quote: Object,
   clients: Array,
-  currency: String
+  currency: String,
+  default_tax_rate: {
+    type: Number,
+    default: 20
+  },
 });
 
 const breadcrumbs = [
   { title: 'Dashboard', href: route('dashboard') },
-  { title: 'Factures', href: route('invoices.index') },
-  { title: props.invoice.invoice_number, href: route('invoices.show', props.invoice.id) },
-  { title: 'Modifier', href: route('invoices.edit', props.invoice.id), current: true }
+  { title: 'Devis', href: route('quotes.index') },
+  { title: props.quote.quote_number, href: route('quotes.show', props.quote.id) },
+  { title: 'Modifier', href: route('quotes.edit', props.quote.id) }
 ];
 
-// Préparation des données du formulaire
 const form = useForm({
-  client_id: props.invoice.client_id,
-  invoice_number: props.invoice.invoice_number,
-  invoice_date: props.invoice.invoice_date,
-  due_date: props.invoice.due_date,
+  client_id: props.quote.client_id,
+  quote_number: props.quote.quote_number,
+  quote_date: props.quote.quote_date,
+  expiry_date: props.quote.expiry_date,
+  status: props.quote.status,
   items: [],
-  subtotal: props.invoice.subtotal,
-  tax_amount: props.invoice.tax_amount,
-  total: props.invoice.total,
-  status: props.invoice.status,
-  notes: props.invoice.notes,
-  payment_method: props.invoice.payment_method || '',
+  notes: props.quote.notes,
+  subtotal: props.quote.subtotal,
+  tax_amount: props.quote.tax_amount,
+  total: props.quote.total,
 });
 
-// Transformer les éléments de facture pour le formulaire
+// Initialiser les lignes du devis
 onMounted(() => {
-  if (props.invoice.items && props.invoice.items.length > 0) {
-    form.items = props.invoice.items.map(item => ({
+  if (props.quote.items && props.quote.items.length) {
+    form.items = props.quote.items.map(item => ({
       id: item.id,
       description: item.description,
       quantity: item.quantity,
       unit_price: item.unit_price,
       tax_rate: item.tax_rate,
-      tax_amount: item.tax_amount,
       subtotal: item.subtotal,
-      total: item.total
+      tax_amount: item.tax_amount,
+      total: item.total,
     }));
   } else {
-    addItem(); // Ajouter une ligne vide si pas d'élément
+    addItem();
   }
-  calculateTotals();
 });
 
-function addItem() {
+const addItem = () => {
   form.items.push({
     description: '',
     quantity: 1,
     unit_price: 0,
-    tax_rate: 20, // Valeur par défaut
-    tax_amount: 0,
+    tax_rate: props.default_tax_rate,
     subtotal: 0,
-    total: 0
+    tax_amount: 0,
+    total: 0,
   });
-}
+};
 
-function removeItem(index) {
+const removeItem = (index) => {
   form.items.splice(index, 1);
   calculateTotals();
-}
+};
 
-function calculateItemTotal(item) {
-  // Convertir les valeurs en nombres
+const calculateItemTotal = (item) => {
   const quantity = parseFloat(item.quantity) || 0;
   const unitPrice = parseFloat(item.unit_price) || 0;
   const taxRate = parseFloat(item.tax_rate) || 0;
 
-  // Calculer les totaux
   item.subtotal = quantity * unitPrice;
   item.tax_amount = item.subtotal * (taxRate / 100);
   item.total = item.subtotal + item.tax_amount;
 
-  // Recalculer les totaux de la facture
   calculateTotals();
-}
+};
 
-function calculateTotals() {
-  form.subtotal = form.items.reduce((sum, item) => sum + (parseFloat(item.subtotal) || 0), 0);
-  form.tax_amount = form.items.reduce((sum, item) => sum + (parseFloat(item.tax_amount) || 0), 0);
+const calculateTotals = () => {
+  form.subtotal = form.items.reduce((total, item) => total + (parseFloat(item.subtotal) || 0), 0);
+  form.tax_amount = form.items.reduce((total, item) => total + (parseFloat(item.tax_amount) || 0), 0);
   form.total = form.subtotal + form.tax_amount;
-}
+};
 
 const formatAmount = (amount) => {
   if (amount === undefined || amount === null) return '-';
   return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: props.currency }).format(amount);
 };
 
-const cancel = () => {
-  router.visit(route('invoices.show', props.invoice.id));
+const submit = () => {
+  form.put(route('quotes.update', props.quote.id));
 };
 
-const submit = () => {
-  form.patch(route('invoices.update', props.invoice.id));
+const cancel = () => {
+  window.history.back();
 };
 </script>

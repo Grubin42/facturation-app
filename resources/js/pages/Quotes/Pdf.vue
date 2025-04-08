@@ -12,36 +12,36 @@
       <!-- Informations client à droite -->
       <div class="text-right client-info mt-3">
         <div style="line-height: 1.2;">
-          <p class="font-semibold mb-0">{{ invoice.client.name }}</p>
-          <p class="mb-0">{{ invoice.client.address }}</p>
-          <p class="mb-0">{{ invoice.client.postal_code }} {{ invoice.client.city }}</p>
-          <p class="mb-0">{{ invoice.client.country }}</p>
-          <p class="mb-0">Tél: {{ invoice.client.phone }}</p>
-          <p class="mb-0">Email: {{ invoice.client.email }}</p>
+          <p class="font-semibold mb-0">{{ quote.client.name }}</p>
+          <p class="mb-0">{{ quote.client.address }}</p>
+          <p class="mb-0">{{ quote.client.postal_code }} {{ quote.client.city }}</p>
+          <p class="mb-0">{{ quote.client.country }}</p>
+          <p class="mb-0">Tél: {{ quote.client.phone }}</p>
+          <p class="mb-0">Email: {{ quote.client.email }}</p>
         </div>
       </div>
     </div>
 
-    <!-- Dates et titre de la facture -->
+    <!-- Dates et titre du devis -->
     <div class="px-8 mb-5">
-    <!-- Titre et numéro de facture -->
+    <!-- Titre et numéro de devis -->
       <div>
-        <h1 class="text-xl font-bold mb-1">{{ invoice.invoice_number }}</h1>
+        <h1 class="text-xl font-bold mb-1">{{ quote.quote_number }}</h1>
       </div>
       <!-- Dates sur une ligne -->
       <div class="flex justify-start mb-4">
         <div class="mr-10">
-          <span class="font-bold">Date de facture:</span>
-          {{ formatDate(invoice.invoice_date) }}
+          <span class="font-bold">Date du devis:</span>
+          {{ formatDate(quote.quote_date) }}
         </div>
         <div>
-          <span class="font-bold">Date d'échéance:</span>
-          {{ formatDate(invoice.due_date) }}
+          <span class="font-bold">Date d'expiration:</span>
+          {{ formatDate(quote.expiry_date) }}
         </div>
       </div>
     </div>
 
-    <!-- Lignes de facture -->
+    <!-- Lignes de devis -->
     <div class="px-8 mb-10">
       <table class="min-w-full border">
         <thead>
@@ -54,7 +54,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="item in invoice.items" :key="item.id" class="border-b">
+          <tr v-for="item in quote.items" :key="item.id" class="border-b">
             <td class="border-x px-4 py-2">{{ item.description }}</td>
             <td class="border-x px-4 py-2 text-right">{{ item.quantity }}</td>
             <td class="border-x px-4 py-2 text-right">{{ formatAmount(item.unit_price) }}</td>
@@ -66,17 +66,17 @@
           <tr>
             <td colspan="3" class="border px-4 py-2"></td>
             <td class="border px-4 py-2 text-right font-semibold">Sous-total:</td>
-            <td class="border px-4 py-2 text-right">{{ formatAmount(invoice.subtotal) }}</td>
+            <td class="border px-4 py-2 text-right">{{ formatAmount(quote.subtotal) }}</td>
           </tr>
           <tr>
             <td colspan="3" class="border px-4 py-2"></td>
             <td class="border px-4 py-2 text-right font-semibold">TVA:</td>
-            <td class="border px-4 py-2 text-right">{{ formatAmount(invoice.tax_amount) }}</td>
+            <td class="border px-4 py-2 text-right">{{ formatAmount(quote.tax_amount) }}</td>
           </tr>
           <tr class="bg-gray-100">
             <td colspan="3" class="border px-4 py-2"></td>
             <td class="border px-4 py-2 text-right font-bold">Total:</td>
-            <td class="border px-4 py-2 text-right font-bold">{{ formatAmount(invoice.total) }}</td>
+            <td class="border px-4 py-2 text-right font-bold">{{ formatAmount(quote.total) }}</td>
           </tr>
         </tfoot>
       </table>
@@ -84,15 +84,16 @@
 
     <!-- Notes et conditions -->
     <div class="px-8 mb-10">
-      <div v-if="invoice.notes" class="mb-6">
+      <div v-if="quote.notes" class="mb-6">
         <h3 class="text-lg font-semibold mb-2">Notes:</h3>
-        <p class="whitespace-pre-line">{{ invoice.notes }}</p>
+        <p class="whitespace-pre-line">{{ quote.notes }}</p>
       </div>
 
       <div>
-        <h3 class="text-lg font-semibold mb-2">Conditions de paiement:</h3>
-        <p>Paiement à 30 jours dès réception de la facture.</p>
-        <p>Tout retard de paiement entraînera des pénalités au taux annuel de 10%.</p>
+        <h3 class="text-lg font-semibold mb-2">Conditions:</h3>
+        <p>Ce devis est valable jusqu'au {{ formatDate(quote.expiry_date) }}.</p>
+        <p>En cas d'acceptation, veuillez nous retourner ce devis signé.</p>
+        <p v-if="settings.quote_footer" class="whitespace-pre-line mt-4">{{ settings.quote_footer }}</p>
       </div>
     </div>
 
@@ -127,8 +128,6 @@
           Email: {{ settings.company_email }}
         </span>
       </p>
-
-      <p v-if="settings.invoice_footer" class="whitespace-pre-line text-center mt-2">{{ settings.invoice_footer }}</p>
     </div>
 
     <!-- Boutons d'impression (visible uniquement à l'écran) -->
@@ -153,7 +152,7 @@
 import { computed, onMounted } from 'vue';
 
 const props = defineProps({
-  invoice: Object,
+  quote: Object,
   settings: Object
 });
 
@@ -170,7 +169,7 @@ const goBack = () => {
 
 const downloadPdf = () => {
   // URL de l'API pour générer le PDF avec le paramètre de téléchargement
-  const pdfUrl = route('invoices.pdf', props.invoice.id) + '?download=true';
+  const pdfUrl = route('quotes.pdf', props.quote.id) + '?download=true';
 
   // Ouvrir le PDF dans un nouvel onglet
   window.open(pdfUrl, '_blank');

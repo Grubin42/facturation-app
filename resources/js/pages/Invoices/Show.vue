@@ -3,18 +3,23 @@
     <div class="container mx-auto py-6">
       <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-bold">Facture {{ invoice.invoice_number }}</h1>
-        <div class="flex space-x-2">
-          <Link :href="route('invoices.index')" class="text-gray-600 hover:text-gray-900">
-            Retour à la liste
-          </Link>
-          <span class="text-gray-300">|</span>
-          <Link :href="route('invoices.edit', invoice.id)" class="text-gray-600 hover:text-gray-900">
+        <div class="flex space-x-3">
+          <Link
+            v-if="invoice.status !== 'cancelled'"
+            :href="route('invoices.edit', invoice.id)"
+            class="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
+          >
             Modifier
           </Link>
-          <span class="text-gray-300">|</span>
-          <Link :href="route('invoices.pdf', invoice.id)" class="text-gray-600 hover:text-gray-900" target="_blank">
+          <Link :href="route('invoices.pdf', invoice.id)" class="bg-purple-600 text-white py-2 px-4 rounded hover:bg-purple-700">
             PDF
           </Link>
+          <button
+            @click="confirmDelete"
+            class="bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700"
+          >
+            Supprimer
+          </button>
         </div>
       </div>
 
@@ -31,14 +36,26 @@
               {{ getStatusLabel(invoice.status) }}
             </span>
           </div>
-          <div v-if="invoice.status !== 'paid' && invoice.status !== 'cancelled'" class="flex space-x-2">
-            <Button v-if="invoice.status === 'draft'" @click="sendInvoice">
+          <div class="flex space-x-3">
+            <Button
+              v-if="invoice.status === 'draft'"
+              @click="sendInvoice"
+              variant="outline"
+            >
               Envoyer
             </Button>
-            <Button @click="openPaymentModal">
+            <Button
+              v-if="invoice.status !== 'paid' && invoice.status !== 'cancelled'"
+              @click="openPaymentModal"
+              variant="outline"
+            >
               Marquer comme payée
             </Button>
-            <Button variant="destructive" @click="openCancellationModal">
+            <Button
+              v-if="invoice.status !== 'paid' && invoice.status !== 'cancelled'"
+              @click="openCancellationModal"
+              variant="outline"
+            >
               Annuler la facture
             </Button>
           </div>
@@ -188,6 +205,22 @@
           </form>
         </DialogContent>
       </Dialog>
+
+      <!-- Modal de confirmation de suppression -->
+      <Dialog :open="deleteModal" @update:open="deleteModal = $event">
+        <DialogContent class="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Supprimer la facture</DialogTitle>
+            <DialogDescription>
+              Êtes-vous sûr de vouloir supprimer cette facture ? Cette action est irréversible.
+            </DialogDescription>
+          </DialogHeader>
+          <div class="flex justify-end space-x-2">
+            <Button variant="outline" @click="deleteModal = false">Annuler</Button>
+            <Button variant="destructive" @click="deleteInvoice">Supprimer</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   </AppLayout>
 </template>
@@ -228,6 +261,8 @@ const cancellationModal = ref({
   isOpen: false,
   reason: ''
 });
+
+const deleteModal = ref(false);
 
 const formatDate = (dateString) => {
   if (!dateString) return '-';
@@ -307,5 +342,17 @@ const downloadPdf = () => {
 
   // Ouvrir le PDF dans un nouvel onglet
   window.open(pdfUrl, '_blank');
+};
+
+const deleteInvoice = () => {
+  router.delete(route('invoices.destroy', props.invoice.id), {
+    onSuccess: () => {
+      deleteModal.value = false;
+    }
+  });
+};
+
+const confirmDelete = () => {
+  deleteModal.value = true;
 };
 </script>

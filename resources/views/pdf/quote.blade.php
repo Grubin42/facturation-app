@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Facture {{ $invoice->invoice_number }}</title>
+    <title>Devis {{ $quote->quote_number }}</title>
     <style>
         @page {
             margin: 15mm 15mm 10mm 15mm;
@@ -11,7 +11,7 @@
         }
         @page {
             @top-right {
-                content: "FACTURE {{ $invoice->invoice_number }}";
+                content: "DEVIS {{ $quote->quote_number }}";
                 font-size: 10pt;
             }
         }
@@ -94,7 +94,7 @@
         .text-center {
             text-align: center;
         }
-        .invoice-title {
+        .quote-title {
             font-size: 12pt;
             font-weight: bold;
             margin-bottom: 5px;
@@ -162,7 +162,7 @@
             border: 1px solid #ddd;
         }
 
-        /* Numéro de facture sur les pages suivantes uniquement */
+        /* Numéro de devis sur les pages suivantes uniquement */
         .page-header {
             display: none; /* Caché sur la première page */
         }
@@ -170,7 +170,7 @@
         /* Configuration des règles @page */
         @page:not(:first) {
             @top-left {
-                content: "FACTURE {{ $invoice->invoice_number }}";
+                content: "DEVIS {{ $quote->quote_number }}";
                 font-size: 10pt;
             }
         }
@@ -216,34 +216,34 @@
                     @endif
                 </td>
                 <td class="client-cell">
-                    <div style="font-weight: bold;">{{ $invoice->client->name }}</div>
-                    <div>{{ $invoice->client->address }}</div>
-                    <div>{{ $invoice->client->postal_code }} {{ $invoice->client->city }}</div>
-                    <div>{{ $invoice->client->country }}</div>
-                    <div>Tél: {{ $invoice->client->phone }}</div>
-                    <div>Email: {{ $invoice->client->email }}</div>
+                    <div style="font-weight: bold;">{{ $quote->client->name }}</div>
+                    <div>{{ $quote->client->address }}</div>
+                    <div>{{ $quote->client->postal_code }} {{ $quote->client->city }}</div>
+                    <div>{{ $quote->client->country }}</div>
+                    <div>Tél: {{ $quote->client->phone }}</div>
+                    <div>Email: {{ $quote->client->email }}</div>
                 </td>
             </tr>
         </table>
 
-        <!-- Titre de la facture -->
+        <!-- Titre du devis -->
         <div style="margin-bottom: 15px;">
-            <div class="invoice-title">{{ $invoice->invoice_number }}</div>
+            <div class="quote-title">{{ $quote->quote_number }}</div>
         </div>
 
         <!-- Informations de dates -->
         <div class="dates-section">
             <div class="date-item">
-                <span style="font-weight: bold;">Date de facture:</span>
-                {{ \Carbon\Carbon::parse($invoice->invoice_date)->format('d/m/Y') }}
+                <span style="font-weight: bold;">Date du devis:</span>
+                {{ \Carbon\Carbon::parse($quote->quote_date)->format('d/m/Y') }}
             </div>
             <div class="date-item">
-                <span style="font-weight: bold;">Date d'échéance:</span>
-                {{ \Carbon\Carbon::parse($invoice->due_date)->format('d/m/Y') }}
+                <span style="font-weight: bold;">Date d'expiration:</span>
+                {{ \Carbon\Carbon::parse($quote->expiry_date)->format('d/m/Y') }}
             </div>
         </div>
 
-        <!-- Lignes de facture -->
+        <!-- Lignes de devis -->
         <div class="content-section">
             <table class="items-table">
                 <thead>
@@ -256,7 +256,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($invoice->items as $item)
+                    @foreach($quote->items as $item)
                     <tr>
                         <td>{{ $item->description }}</td>
                         <td class="right">{{ $item->quantity }}</td>
@@ -274,17 +274,17 @@
                     <tr>
                         <td colspan="3" class="text-right"></td>
                         <td class="right font-bold" style="width: 15%;">Sous-total:</td>
-                        <td class="right" style="width: 15%;">{{ number_format($invoice->subtotal, 2, ',', ' ') }} {{ $settings->currency }}</td>
+                        <td class="right" style="width: 15%;">{{ number_format($quote->subtotal, 2, ',', ' ') }} {{ $settings->currency }}</td>
                     </tr>
                     <tr>
                         <td colspan="3" class="text-right"></td>
                         <td class="right font-bold">TVA:</td>
-                        <td class="right">{{ number_format($invoice->tax_amount, 2, ',', ' ') }} {{ $settings->currency }}</td>
+                        <td class="right">{{ number_format($quote->tax_amount, 2, ',', ' ') }} {{ $settings->currency }}</td>
                     </tr>
                     <tr style="background-color: #f2f2f2;">
                         <td colspan="3" class="text-right"></td>
                         <td class="right font-bold">Total:</td>
-                        <td class="right font-bold">{{ number_format($invoice->total, 2, ',', ' ') }} {{ $settings->currency }}</td>
+                        <td class="right font-bold">{{ number_format($quote->total, 2, ',', ' ') }} {{ $settings->currency }}</td>
                     </tr>
                 </tbody>
             </table>
@@ -292,17 +292,20 @@
 
         <!-- Notes et conditions -->
         <div class="content-section">
-            @if($invoice->notes)
+            @if($quote->notes)
             <div style="margin-bottom: 20px;">
                 <h3>Notes:</h3>
-                <p style="white-space: pre-line;">{{ $invoice->notes }}</p>
+                <p style="white-space: pre-line;">{{ $quote->notes }}</p>
             </div>
             @endif
 
             <div class="no-break">
-                <h3>Conditions de paiement:</h3>
-                <p>Paiement à 30 jours dès réception de la facture.</p>
-                <p>Tout retard de paiement entraînera des pénalités au taux annuel de 10%.</p>
+                <h3>Conditions:</h3>
+                <p>Ce devis est valable jusqu'au {{ \Carbon\Carbon::parse($quote->expiry_date)->format('d/m/Y') }}.</p>
+                <p>En cas d'acceptation, veuillez nous retourner ce devis signé.</p>
+                @if($settings->quote_footer)
+                <p style="white-space: pre-line; margin-top: 10px;">{{ $settings->quote_footer }}</p>
+                @endif
             </div>
         </div>
     </div>

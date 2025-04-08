@@ -37,7 +37,7 @@ class InvoicePolicy
      */
     public function update(User $user, Invoice $invoice): bool
     {
-        return $user->id === $invoice->user_id && $invoice->status !== 'paid';
+        return $user->id === $invoice->user_id;
     }
 
     /**
