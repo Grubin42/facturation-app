@@ -1,7 +1,7 @@
 <template>
   <AppLayout :breadcrumbs="breadcrumbs">
     <div class="container mx-auto py-6">
-      <div class="flex justify-between items-center mb-6">
+      <div class="flex justify-between items-center mb-6 px-6">
         <h1 class="text-2xl font-bold">Devis {{ quote.quote_number }}</h1>
         <div class="flex space-x-3">
           <Link :href="route('quotes.edit', quote.id)" class="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">

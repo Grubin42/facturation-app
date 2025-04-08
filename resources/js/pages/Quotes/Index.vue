@@ -1,7 +1,7 @@
 <template>
   <AppLayout :breadcrumbs="breadcrumbs">
     <div class="container mx-auto py-6">
-      <div class="flex justify-between items-center mb-6">
+      <div class="flex justify-between items-center mb-6 px-6">
         <h1 class="text-2xl font-bold">Devis</h1>
         <Link :href="route('quotes.create')" class="bg-primary text-white py-2 px-4 rounded-md hover:bg-primary/90">
           Nouveau devis

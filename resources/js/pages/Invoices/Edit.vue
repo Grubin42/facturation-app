@@ -1,7 +1,7 @@
 <template>
   <AppLayout :breadcrumbs="breadcrumbs">
     <div class="container mx-auto py-6">
-      <div class="flex justify-between items-center mb-6">
+      <div class="flex justify-between items-center mb-6 px-6">
         <h1 class="text-2xl font-bold">Modifier la facture {{ invoice.invoice_number }}</h1>
         <div class="flex space-x-2">
           <Link :href="route('invoices.show', invoice.id)" class="text-gray-600 hover:text-gray-900">

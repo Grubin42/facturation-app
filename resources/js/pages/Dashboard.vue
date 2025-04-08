@@ -65,9 +65,9 @@ console.log('overdueInvoices reçu:', props.overdueInvoices);
     <Head title="Dashboard" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="container mx-auto py-6">
+        <div class="container mx-auto px-6">
             <!-- Actions rapides -->
-            <div class="mb-8">
+            <div class="mb-8 py-6">
                 <h2 class="text-lg font-semibold mb-4">Actions rapides</h2>
                 <div class="flex flex-wrap gap-4">
                     <Link :href="route('invoices.create')">

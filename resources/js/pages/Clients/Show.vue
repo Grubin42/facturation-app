@@ -1,7 +1,7 @@
 <template>
   <AppLayout :breadcrumbs="breadcrumbs">
     <div class="container mx-auto py-6">
-      <div class="flex justify-between items-center mb-6">
+      <div class="flex justify-between items-center mb-6 px-6">
         <h1 class="text-2xl font-bold">{{ client.name }}</h1>
         <div class="flex space-x-3">
           <Link :href="route('clients.edit', client.id)" class="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">
@@ -85,7 +85,7 @@
 
       <!-- Factures -->
       <div class="mt-8">
-        <h2 class="text-xl font-semibold mb-4">Factures</h2>
+        <h2 class="text-xl font-semibold mb-4 px-6">Factures</h2>
 
         <div v-if="client.invoices && client.invoices.length" class="bg-white rounded-lg shadow-md overflow-hidden">
           <table class="min-w-full divide-y divide-gray-200">
@@ -143,7 +143,7 @@
 
       <!-- Devis -->
       <div class="mt-8">
-        <h2 class="text-xl font-semibold mb-4">Devis</h2>
+        <h2 class="text-xl font-semibold mb-4 px-6">Devis</h2>
 
         <div v-if="client.quotes && client.quotes.length" class="bg-white rounded-lg shadow-md overflow-hidden">
           <table class="min-w-full divide-y divide-gray-200">

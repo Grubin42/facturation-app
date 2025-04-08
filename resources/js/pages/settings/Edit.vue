@@ -1,7 +1,7 @@
 <template>
   <AppLayout :breadcrumbs="breadcrumbs">
     <div class="container mx-auto py-6">
-      <div class="flex justify-between items-center mb-6">
+      <div class="flex justify-between items-center mb-6 px-6">
         <h1 class="text-2xl font-bold">Paramètres</h1>
       </div>
 
