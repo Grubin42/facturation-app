@@ -3,38 +3,39 @@
 
     <!-- En-tête -->
     <div class="flex justify-between items-start mb-10 px-8 header-section">
-      <div>
-        <h1 class="text-3xl font-bold mb-1">FACTURE</h1>
-        <p class="text-lg font-semibold">{{ invoice.invoice_number }}</p>
-      </div>
-      <div class="text-right flex flex-col items-end">
-        <div v-if="settings.logo_path" class="mb-2 max-w-[120px] max-h-[80px] flex justify-center">
+      <!-- Logo et nom de l'entreprise à gauche -->
+      <div class="flex flex-col items-center">
+        <div v-if="settings.logo_path" class="mb-2 max-w-[150px] max-h-[150px] flex justify-center">
           <img :src="logoUrl" alt="Logo de l'entreprise" class="object-contain" />
         </div>
-        <h2 class="text-lg font-bold mt-1">{{ settings.company_name }}</h2>
+      </div>
+      <!-- Informations client à droite -->
+      <div class="text-right client-info mt-3">
+        <div style="line-height: 1.2;">
+          <p class="font-semibold mb-0">{{ invoice.client.name }}</p>
+          <p class="mb-0">{{ invoice.client.address }}</p>
+          <p class="mb-0">{{ invoice.client.postal_code }} {{ invoice.client.city }}</p>
+          <p class="mb-0">{{ invoice.client.country }}</p>
+          <p class="mb-0">Tél: {{ invoice.client.phone }}</p>
+          <p class="mb-0">Email: {{ invoice.client.email }}</p>
+        </div>
       </div>
     </div>
 
-    <!-- Informations de facturation -->
-    <div class="flex justify-between mb-10 px-8 client-info-section">
-      <div class="w-1/2 client-info" style="line-height: 1;">
-        <h3 class="text-lg font-semibold mb-1">Facturé à:</h3>
-        <div style="line-height: 1;">
-          <p class="font-semibold mb-0" style="margin: 0; padding: 1px 0;">{{ invoice.client.name }}</p>
-          <p class="mb-0" style="margin: 0; padding: 1px 0;">{{ invoice.client.address }}</p>
-          <p class="mb-0" style="margin: 0; padding: 1px 0;">{{ invoice.client.postal_code }} {{ invoice.client.city }}</p>
-          <p class="mb-0" style="margin: 0; padding: 1px 0;">{{ invoice.client.country }}</p>
-          <p class="mb-0" style="margin: 0; padding: 1px 0;">Tél: {{ invoice.client.phone }}</p>
-          <p class="mb-0" style="margin: 0; padding: 1px 0;">Email: {{ invoice.client.email }}</p>
-        </div>
+    <!-- Dates et titre de la facture -->
+    <div class="px-8 mb-5">
+    <!-- Titre et numéro de facture -->
+      <div>
+        <h1 class="text-xl font-bold mb-1">FACTURE {{ invoice.invoice_number }}</h1>
       </div>
-      <div class="w-1/2 text-right">
-        <div style="margin-bottom: 5px;">
-          <span style="font-weight: bold;">Date de facture:</span>
+      <!-- Dates sur une ligne -->
+      <div class="flex justify-start mb-4">
+        <div class="mr-10">
+          <span class="font-bold">Date de facture:</span>
           {{ formatDate(invoice.invoice_date) }}
         </div>
         <div>
-          <span style="font-weight: bold;">Date d'échéance:</span>
+          <span class="font-bold">Date d'échéance:</span>
           {{ formatDate(invoice.due_date) }}
         </div>
       </div>
@@ -90,7 +91,7 @@
 
       <div>
         <h3 class="text-lg font-semibold mb-2">Conditions de paiement:</h3>
-        <p>Paiement à réception de facture.</p>
+        <p>Paiement à 30 jours dès réception de la facture.</p>
         <p>Tout retard de paiement entraînera des pénalités au taux annuel de 10%.</p>
       </div>
     </div>
@@ -150,7 +151,6 @@
 
 <script setup>
 import { computed, onMounted } from 'vue';
-import { router } from '@inertiajs/vue3';
 
 const props = defineProps({
   invoice: Object,

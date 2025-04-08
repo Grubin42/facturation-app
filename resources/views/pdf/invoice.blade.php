@@ -6,7 +6,7 @@
     <title>Facture {{ $invoice->invoice_number }}</title>
     <style>
         @page {
-            margin: 15mm 15mm 30mm 15mm;
+            margin: 15mm 15mm 10mm 15mm;
             size: A4;
         }
         @page {
@@ -26,6 +26,7 @@
         .container {
             max-width: 100%;
             padding: 20px;
+            padding-bottom: 60px;
         }
 
         /* Structure de tableau pour l'en-tête */
@@ -94,7 +95,7 @@
             text-align: center;
         }
         .invoice-title {
-            font-size: 24pt;
+            font-size: 12pt;
             font-weight: bold;
             margin-bottom: 5px;
         }
@@ -104,11 +105,18 @@
             left: 15mm;
             right: 15mm;
             border-top: 1px solid #ddd;
-            padding-top: 15px;
-            margin-top: 10px;
+            padding-top: 5px;
+            padding-bottom: 0;
+            margin-top: 0;
+            margin-bottom: 0;
             text-align: center;
-            font-size: 10pt;
+            font-size: 9pt;
             background: white;
+            z-index: 1000;
+        }
+        .footer-section p, .footer-section div {
+            margin: 3px 0;
+            line-height: 1.2;
         }
         .uppercase {
             text-transform: uppercase;
@@ -120,6 +128,7 @@
         }
         .totals-section {
             page-break-inside: avoid;
+            break-inside: avoid;
         }
 
         /* Espacement des sections */
@@ -175,6 +184,25 @@
             display: inline-block;
             margin-right: 30px;
         }
+
+        /* Empêcher les coupures dans les sections importantes */
+        .no-break {
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+
+        /* Styles spécifiques pour la section des totaux */
+        .totals-wrapper {
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+            display: table;
+            width: 100%;
+        }
+
+        .totals-section {
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
     </style>
 </head>
 <body>
@@ -186,11 +214,9 @@
                     @if($settings->logo_path)
                         <img src="{{ public_path('storage/' . $settings->logo_path) }}" alt="Logo de l'entreprise" class="logo">
                     @endif
-                    <div class="font-bold" style="font-size: 14pt;">{{ $settings->company_name }}</div>
                 </td>
                 <td class="client-cell">
-                    <h3 style="margin-top: 0; margin-bottom: 10px;">{{ $invoice->invoice_number }}</h3>
-                    <div>{{ $invoice->client->name }}</div>
+                    <div style="font-weight: bold;">{{ $invoice->client->name }}</div>
                     <div>{{ $invoice->client->address }}</div>
                     <div>{{ $invoice->client->postal_code }} {{ $invoice->client->city }}</div>
                     <div>{{ $invoice->client->country }}</div>
@@ -240,11 +266,15 @@
                     </tr>
                     @endforeach
                 </tbody>
-                <tfoot class="totals-section">
+            </table>
+
+            <!-- Section des totaux séparée pour éviter les coupures -->
+            <table class="items-table totals-wrapper">
+                <tbody class="totals-section">
                     <tr>
                         <td colspan="3" class="text-right"></td>
-                        <td class="right font-bold">Sous-total:</td>
-                        <td class="right">{{ number_format($invoice->subtotal, 2, ',', ' ') }} {{ $settings->currency }}</td>
+                        <td class="right font-bold" style="width: 15%;">Sous-total:</td>
+                        <td class="right" style="width: 15%;">{{ number_format($invoice->subtotal, 2, ',', ' ') }} {{ $settings->currency }}</td>
                     </tr>
                     <tr>
                         <td colspan="3" class="text-right"></td>
@@ -256,7 +286,7 @@
                         <td class="right font-bold">Total:</td>
                         <td class="right font-bold">{{ number_format($invoice->total, 2, ',', ' ') }} {{ $settings->currency }}</td>
                     </tr>
-                </tfoot>
+                </tbody>
             </table>
         </div>
 
@@ -269,9 +299,9 @@
             </div>
             @endif
 
-            <div>
+            <div class="no-break">
                 <h3>Conditions de paiement:</h3>
-                <p>Paiement à réception de facture.</p>
+                <p>Paiement à 30 jours dès réception de la facture.</p>
                 <p>Tout retard de paiement entraînera des pénalités au taux annuel de 10%.</p>
             </div>
         </div>
