@@ -439,10 +439,10 @@ class QuoteController extends Controller
 
         // Pour téléchargement direct
         if ($request->has('download')) {
-            return $pdf->download("devis_{$quote->quote_number}.pdf");
+            return $pdf->download("{$quote->client->name}_{$quote->quote_number}.pdf");
         }
 
         // Pour impression ou visualisation dans le navigateur
-        return $pdf->stream("devis_{$quote->quote_number}.pdf");
+        return $pdf->stream("{$quote->client->name}_{$quote->quote_number}.pdf");
     }
 }

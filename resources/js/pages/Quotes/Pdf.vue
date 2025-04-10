@@ -11,13 +11,13 @@
       </div>
       <!-- Informations client à droite -->
       <div class="text-right client-info mt-3">
-        <div style="line-height: 1.2;">
+        <div style="line-height: 1.2;" class="text-left">
           <p class="font-semibold mb-0">{{ quote.client.name }}</p>
           <p class="mb-0">{{ quote.client.address }}</p>
           <p class="mb-0">{{ quote.client.postal_code }} {{ quote.client.city }}</p>
-          <p class="mb-0">{{ quote.client.country }}</p>
-          <p class="mb-0">Tél: {{ quote.client.phone }}</p>
-          <p class="mb-0">Email: {{ quote.client.email }}</p>
+          <p v-if="quote.client.country" class="mb-0">{{ quote.client.country }}</p>
+          <p v-if="quote.client.phone" class="mb-0">Tél: {{ quote.client.phone }}</p>
+          <p v-if="quote.client.email" class="mb-0">Email: {{ quote.client.email }}</p>
         </div>
       </div>
     </div>

@@ -373,7 +373,7 @@ class InvoiceController extends Controller
             $pdf->setOption('enable_html5_parser', true);
 
             // Télécharger le PDF
-            return $pdf->download('facture-' . $invoice->invoice_number . '.pdf');
+            return $pdf->download($invoice->client->name . '-' . $invoice->invoice_number . '.pdf');
         }
 
         // Sinon, afficher la vue d'aperçu

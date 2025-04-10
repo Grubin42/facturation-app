@@ -43,13 +43,18 @@
         }
 
         .company-cell {
-            width: 50%;
+            width: auto;
             text-align: left;
         }
 
         .client-cell {
-            width: 50%;
             text-align: right;
+            padding-right: 0;
+        }
+
+        .client-info-container {
+            display: inline-block;
+            text-align: left;
         }
 
         .logo {
@@ -216,12 +221,20 @@
                     @endif
                 </td>
                 <td class="client-cell">
-                    <div style="font-weight: bold;">{{ $invoice->client->name }}</div>
-                    <div>{{ $invoice->client->address }}</div>
-                    <div>{{ $invoice->client->postal_code }} {{ $invoice->client->city }}</div>
-                    <div>{{ $invoice->client->country }}</div>
-                    <div>Tél: {{ $invoice->client->phone }}</div>
-                    <div>Email: {{ $invoice->client->email }}</div>
+                    <div class="client-info-container">
+                        <div style="font-weight: bold;">{{ $invoice->client->name }}</div>
+                        <div>{{ $invoice->client->address }}</div>
+                        <div>{{ $invoice->client->postal_code }} {{ $invoice->client->city }}</div>
+                        @if($invoice->client->country)
+                        <div>{{ $invoice->client->country }}</div>
+                        @endif
+                        @if($invoice->client->phone)
+                        <div>Tél: {{ $invoice->client->phone }}</div>
+                        @endif
+                        @if($invoice->client->email)
+                        <div>Email: {{ $invoice->client->email }}</div>
+                        @endif
+                    </div>
                 </td>
             </tr>
         </table>

@@ -11,13 +11,13 @@
       </div>
       <!-- Informations client à droite -->
       <div class="text-right client-info mt-3">
-        <div style="line-height: 1.2;">
+        <div style="line-height: 1.2;" class="text-left">
           <p class="font-semibold mb-0">{{ invoice.client.name }}</p>
           <p class="mb-0">{{ invoice.client.address }}</p>
           <p class="mb-0">{{ invoice.client.postal_code }} {{ invoice.client.city }}</p>
-          <p class="mb-0">{{ invoice.client.country }}</p>
-          <p class="mb-0">Tél: {{ invoice.client.phone }}</p>
-          <p class="mb-0">Email: {{ invoice.client.email }}</p>
+          <p v-if="invoice.client.country" class="mb-0">{{ invoice.client.country }}</p>
+          <p v-if="invoice.client.phone" class="mb-0">Tél: {{ invoice.client.phone }}</p>
+          <p v-if="invoice.client.email" class="mb-0">Email: {{ invoice.client.email }}</p>
         </div>
       </div>
     </div>
